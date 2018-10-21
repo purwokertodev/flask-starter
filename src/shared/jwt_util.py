@@ -10,7 +10,7 @@ class JwtUtil:
         """ Generate access token """
         try:
             payload = {
-                'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
+                'exp': datetime.utcnow() + timedelta(days=0, seconds=120),
                 'iat': datetime.utcnow(),
                 'iss': 'purwokertodev.github.io',
                 'sub': sub
@@ -24,7 +24,7 @@ class JwtUtil:
     def decode(access_token):
         try:
             payload = jwt.decode(access_token, app.config.get('SECRET_KEY'))
-            return payload['sub']
+            return payload
         except jwt.ExpiredSignatureError:
             return 'access token expired'
         except jwt.InvalidTokenError:
