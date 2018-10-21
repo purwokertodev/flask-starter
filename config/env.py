@@ -7,7 +7,7 @@ database_name = 'flask_auth'
 
 class BaseConfig:
     """Base configuration."""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
+    SECRET_KEY = os.getenv('SECRET_KEY', '123456')
     DEBUG = False
     BCRYPT_LOG_ROUNDS = 13
     SQLALCHEMY_TRACK_MODIFICATIONS = False
