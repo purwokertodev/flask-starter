@@ -5,6 +5,8 @@ from flask_cors import CORS
 import markdown
 import os
 
+
+
 # create instance of Flask
 app = Flask(__name__)
 CORS(app)
@@ -24,3 +26,6 @@ def index():
 	with open(os.getcwd() + '/Readme.md', 'r') as readme_file:
 		content = readme_file.read()
 		return markdown.markdown(content)
+
+from src.user.delivery.flask_handler import USER_BLUEPRINT
+app.register_blueprint(USER_BLUEPRINT)
