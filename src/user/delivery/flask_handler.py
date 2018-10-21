@@ -7,7 +7,7 @@ from src.shared.jwt_util import JwtUtil
 
 USER_BLUEPRINT = Blueprint('user', __name__)
 
-class Register(MethodView):
+class RegisterAPI(MethodView):
     """ Register resource """
     def post(self):
 
@@ -50,7 +50,7 @@ class Register(MethodView):
 
             return make_response(jsonify(resp)), 400
 
-class Login(MethodView):
+class LoginAPI(MethodView):
     """ Login resource """
     def post(self):
          # get data from body
@@ -96,9 +96,64 @@ class Login(MethodView):
 
             return make_response(jsonify(resp)), 401
 
-register_view = Register.as_view('register_api')
-login_view = Login.as_view('login_api')
+class MeAPI(MethodView):
+    """ Me resource """
+    def get(self):
+        
+        # get authorization header
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            try:
+                auth_jwt = auth_header.split(' ')[1]
+            except IndexError:
+                resp = {
+                        'success': False,
+                        'message': 'invalid authorization header',
+                        'data': {}
+                    }
+
+                return make_response(jsonify(resp)), 401
+        else:
+            auth_jwt = ''
+
+        if auth_jwt:
+            token = JwtUtil.decode(auth_jwt)
+            if not isinstance(token, str):
+                user = User.query.filter_by(id=token['sub']).first()
+                resp = {
+                    'success': True,
+                    'message': 'get me',
+                    'data': {
+                        'id': user.id,
+                        'name': user.name,
+                        'email': user.email,
+                        'password': user.password
+                    }
+                }
+
+                return make_response(jsonify(resp)), 200
+
+            resp = {
+                        'success': False,
+                        'message': 'invalid authorization header',
+                        'data': {}
+                    }
+
+            return make_response(jsonify(resp)), 401
+        else:
+            resp = {
+                        'success': False,
+                        'message': 'invalid authorization header',
+                        'data': {}
+                    }
+
+            return make_response(jsonify(resp)), 401
+
+register_view = RegisterAPI.as_view('register_api')
+login_view = LoginAPI.as_view('login_api')
+me_view = MeAPI.as_view('me_api')
 
 USER_BLUEPRINT.add_url_rule('/users', view_func=register_view, methods=['POST'])
 USER_BLUEPRINT.add_url_rule('/auth', view_func=login_view, methods=['POST'])
+USER_BLUEPRINT.add_url_rule('/me', view_func=me_view, methods=['GET'])
 
