@@ -1,11 +1,21 @@
-from flask import Flask
+from flask import Flask, jsonify, make_response
+from flask_bcrypt import Bcrypt
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import markdown
 import os
 
-from src.foo.domain.foo import Foo
-
 # create instance of Flask
 app = Flask(__name__)
+CORS(app)
+
+app_env = os.getenv('APP_ENV', 'config.env.DevelopmentConfig')
+
+app.config.from_object(app_env)
+
+bcrypt = Bcrypt(app)
+
+db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
@@ -14,10 +24,3 @@ def index():
 	with open(os.getcwd() + '/Readme.md', 'r') as readme_file:
 		content = readme_file.read()
 		return markdown.markdown(content)
-
-@app.route("/hello")
-def hello():
-	"""-,-"""
-	f = Foo("Wury", "wuriyanto48@yahoo.co.id", "12345")
-	print(f.is_valid_password("12345"))
-	return f.display()
