@@ -20,7 +20,7 @@ class User(db.Model):
         self.id = str(uuid4())
         self.name = name
         self.email = email
-        self.password = self.decode_password()
+        self.password = bcrypt.generate_password_hash(password, app.config.get('BCRYPT_LOG_ROUNDS')).decode()
         self.created_at = datetime.now()
         self.is_admin = is_admin
 
