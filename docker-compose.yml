@@ -6,4 +6,4 @@ services:
     volumes:
      - .:/usr/src/app
     ports:
-     - 9000:9000
+     - 5000:9000
