@@ -20,16 +20,17 @@ class User(db.Model):
         self.id = str(uuid4())
         self.name = name
         self.email = email
-        self.password = bcrypt.generate_password_hash(password, app.config.get('BCRYPT_LOG_ROUNDS')).decode()
+        self.password = self.decode_password(password)
         self.created_at = datetime.now()
         self.is_admin = is_admin
 
-    def decode_password(self):
+    def decode_password(self, password):
         return bcrypt.generate_password_hash(
-            self.password, app.config.get('BCRYPT_LOG_ROUNDS')).decode()
+            password, app.config.get('BCRYPT_LOG_ROUNDS')).decode()
+
+    def is_valid_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
     
     def display(self):
         return "Id : %s \nName : %s  \nEmail : %s \nCreated At : %s" % (self.id, self.name, self.email, str(self.created_at))
     
-    def is_valid_password(self, password):
-        return bcrypt.check_password_hash(self.password, password)
